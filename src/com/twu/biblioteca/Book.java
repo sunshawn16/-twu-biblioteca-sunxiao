@@ -5,8 +5,10 @@ public class Book {
     private String category;
     private String author;
     private int publishedYear;
+    private int bookID;
 
-    public Book(String name,String category,String author,int publishedYear){
+    public Book(int bookID,String name,String category,String author,int publishedYear){
+        this.bookID=bookID;
         this.name=name;
         this.author=author;
         this.category=category;
@@ -42,5 +44,11 @@ public class Book {
 
     public void setName(String name) {
         this.name = name;
+    }
+    public int getBookID() {
+        return bookID;
+    }
+    public void setBookID(int bookID) {
+        this.bookID = bookID;
     }
 }
