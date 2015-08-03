@@ -37,12 +37,33 @@ public class LibraryTest {
         bookList.add(book2);
         Customer c1= new Customer();
         bibloteca.setCurrentBookList(bookList);
-        bibloteca.checkoutBook(1);
-        c1.checkoutBook(book1);
 
-        assertEquals(1, bookList.size());
+        bibloteca.checkoutBook(book1, c1);
+
+        assertEquals(1, bibloteca.getCurrentBookList().size());
         assertEquals(1,c1.getBorrowedBookList().size());
+    }
+    @Test
+    public void should_add_book_when_return(){
+        Book book1= new Book(1,"Clean code","BookList","sun",1990);
+        Book book2= new Book(2,"winds","BookList","sun",1990);
+        List<Book> bookList= new ArrayList<>();
+        List<Book> currentBookList= new ArrayList<>();
+        List<Book> borrowedBookList= new ArrayList<>();
+        bookList.add(book1);
+        bookList.add(book2);
+        currentBookList.add(book2);
+        bibloteca.setBasicBookList(bookList);
+        bibloteca.setCurrentBookList(currentBookList);
 
+        borrowedBookList.add(book1);
+        Customer c1= new Customer();
+        c1.setBorrowedBookList(borrowedBookList);
+
+        bibloteca.returnBook(c1);
+
+        assertEquals(2, bibloteca.getCurrentBookList().size());
+        assertEquals(0,c1.getBorrowedBookList().size());
     }
 
 
