@@ -1,60 +1,77 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.bean.Book;
+import com.twu.biblioteca.bean.Item;
+import com.twu.biblioteca.bean.Movie;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Library {
-    private List<Book> basicBookList;
-
-    public List<Book> getCurrentBookList() {
-        return currentBookList;
-    }
-
-    public void setCurrentBookList(List<Book> currentBookList) {
-        this.currentBookList = currentBookList;
-    }
-
-    private List<Book> currentBookList;
-
+    private List<Item> basicBookList;
+    private List<Item> basicMovieList;
+    private List<Item> currentBookList;
+    private List<Item> currentMovieList;
 
     public void initial(){
-        Book book1= new Book(1,"Clean code","BookList","sun",1990);
-        Book book2= new Book(2,"winds","BookList","sun",1990);
+        Item book1= new Book("Clean code","BookList","sun",1990);
+        Item book2= new Book("winds","BookList","sun",1990);
+        Item movie1= new Movie("Yunshuiyao","Movie","sun",1990,1);
         basicBookList = new ArrayList<>();
-        currentBookList= new ArrayList<>();
+        currentBookList = new ArrayList<>();
+        basicMovieList = new ArrayList<>();
+        currentMovieList = new ArrayList<>();
         basicBookList.add(book1);
         basicBookList.add(book2);
+        basicMovieList.add(movie1);
         currentBookList.add(book1);
         currentBookList.add(book2);
+        currentMovieList.add(movie1);
         Customer customer= new Customer();
 
         System.out.println("Welcome to Biblioteca!");
         while(true) {
             System.out.println("Select number :");
-            System.out.println("1.get booklist");
-            System.out.println("2.return book");
+            System.out.println("1.get itemlist");
+            System.out.println("2.return ");
             int selectedNumber = InputUtil.getInputNum();
             if (selectedNumber == 1) {
                 String cate = getCategory();
                 if(cate.equals("Quit")){
                     continue;
                 }
-                searchBookList(cate);
+                searchList(cate);
                 System.out.println("If you want to quit enter zero,else to continue.");
                 if(InputUtil.getInputNum()==0){
                     continue;
                 }else
                 {
-                    System.out.println("choose the book you want:");
-                    int booknum=InputUtil.getInputNum()-1;
-                    Book wanttoBorrowBook = getCurrentBookList().get(booknum);
-                    checkoutBook(wanttoBorrowBook, customer);
-
+                    if (cate.equals("BookList")){
+                        System.out.println("choose the book you want:");
+                        int itemNum=InputUtil.getInputNum();
+                        if(itemNum>getCurrentBookList().size()){
+                            System.out.println("That Number is not available.");
+                        }
+                        itemNum--;
+                        Item wanttoBorrowItem = getCurrentBookList().get(itemNum);
+                        checkoutItem(wanttoBorrowItem, customer);
+                    }
+                    if(cate.equals("Movie")){
+                        System.out.println("choose the Movie you want:");
+                        int itemNum=InputUtil.getInputNum();
+                        if(itemNum>getCurrentMovieList().size()){
+                            System.out.println("That Number is not available.");
+                            continue;
+                        }
+                        itemNum--;
+                        Item wanttoBorrowItem = getCurrentMovieList().get(itemNum);
+                        checkoutItem(wanttoBorrowItem, customer);
+                    }
                 }
             }else if (selectedNumber == 2) {
-                returnBook(customer);
+                returnItem(customer);
             } else {
-                System.out.println("reenter a number:");
+                System.out.println("The number is wrong, please reenter a number:");
             }
         }
     }
@@ -62,14 +79,17 @@ public class Library {
     private String getCategory() {
         System.out.println("choose the category you want:");
         System.out.println("1.BookList");
-        System.out.println("2.ALL");
+        System.out.println("2.Movie");
         System.out.println("0.Quit");
         int selectedcategory = InputUtil.getInputNum();
         String cate="ALL";
         if(selectedcategory==1)
         {
             cate="BookList";
-        }else if(selectedcategory==0){
+        }else if(selectedcategory==2)
+        {
+              cate = "Movie" ;
+         }else if(selectedcategory==0){
             cate="Quit";
         }
         else{
@@ -78,70 +98,107 @@ public class Library {
         return cate;
     }
 
-    public void searchBookList(String category){
-        System.out.println("*******************************************");
-        System.out.println("No         Name       Author     PublishedYear");
+    public void searchList(String category){
+
         int i=1;
-        if (category=="ALL"){
-            for(Book book : currentBookList)
+        if (category.equals("BookList"))
+        {
+            System.out.println("*************** Book ****************************");
+            System.out.println("No         Name       Author     PublishedYear");
+            for (Item book : currentBookList)
             {
-                System.out.println(i+"  "+ book.getName() + "  " + book.getAuthor() + "  " + book.getPublishedYear());
-                i++;
-            }
-        }else {
-            for (Book book : currentBookList) {
-                if (book.getCategory() == category)
-                {
-                    System.out.println(i +"   "+book.getName() + "  " + book.getAuthor() + "  " + book.getPublishedYear());
+                    book.printInfo(i);
                     i++;
-                }
+            }
+        }else if (category.equals("Movie"))
+        {
+            System.out.println("***************** Movie **************************");
+            System.out.println("No         Name       Author     Year    Rating");
+            for(Item movie : currentMovieList)
+            {
+                     movie.printInfo(i);
+                    i++;
             }
         }
     }
 
-
-    public void checkoutBook(Book book,Customer customer){
-        if (getCurrentBookList().contains(book))
+    public void checkoutItem(Item item, Customer customer){
+        if (item.getCategory().equals("BookList")){
+            getCurrentBookList().remove(item);
+            customer.borrowedItemList.add(item);
+            System.out.println("Thank you! Enjoy !");
+        }
+        else if(item.getCategory().equals("Movie"))
         {
-            getCurrentBookList().remove(book);
-            customer.borrowedBookList.add(book);
-            System.out.println("Thank you! Enjoy the book");
+            getCurrentMovieList().remove(item);
+            customer.borrowedItemList.add(item);
+            System.out.println("Thank you! Enjoy !");
         }
-        else {
-            System.out.println("That book is not available.");
-        }
+
     }
 
-    public void returnBook(Customer customer){
+    public void returnItem(Customer customer){
         System.out.println("**********"+customer.getName()+"'bookList *************************");
-        System.out.println("No       Name         Author    PublishedYear");
+        System.out.println("No       Name       Author    Year");
         int i =1;
-        for(Book bookitem:customer.getBorrowedBookList())
+        for(Item item1:customer.getBorrowedItemList())
         {
-            System.out.println(i +"  "+ bookitem.getName() + "  " + bookitem.getAuthor() + "  " + bookitem.getPublishedYear());
+            item1.printInfo(i);
             i++;
         }
         System.out.println("which one do you like to return?");
-        int returenedBookNum=InputUtil.getInputNum()-1;
-        Book bookToReturn=customer.getBorrowedBookList().get(returenedBookNum);
-        if(getBasicBookList().contains(bookToReturn))
+        int returenedItemNum=InputUtil.getInputNum()-1;
+        Item itemToReturn=customer.getBorrowedItemList().get(returenedItemNum);
+        if (itemToReturn.getCategory().equals("BookList"))
         {
-            getCurrentBookList().add(bookToReturn);
-            customer.getBorrowedBookList().remove(bookToReturn);
-            System.out.println("Thank you for returning the book.");
-        }
-        else {
-            System.out.println("That is not a vaild book to return.");
+            getCurrentBookList().add(itemToReturn);
+            customer.getBorrowedItemList().remove(itemToReturn);
+            System.out.println("Thank you for returning.");
+        } else if(itemToReturn.getCategory().equals("Movie"))
+        {
+            getCurrentMovieList().add(itemToReturn);
+            customer.getBorrowedItemList().remove(itemToReturn);
+            System.out.println("Thank you for returning.");
+
+        }else
+        {
+            System.out.println("That is not a vaild item to return.");
         }
     }
 
 
-    public List<Book> getBasicBookList() {
+    public List<Item> getCurrentMovieList() {
+        return currentMovieList;
+    }
+
+    public void setCurrentMovieList(List<Item> currentMovieList) {
+        this.currentMovieList = currentMovieList;
+    }
+
+    public List<Item> getBasicBookList() {
         return basicBookList;
     }
-    public void setBasicBookList(List<Book> basicBookList) {
+
+    public void setBasicBookList(List<Item> basicBookList) {
         this.basicBookList = basicBookList;
     }
+
+    public List<Item> getBasicMovieList() {
+        return basicMovieList;
+    }
+
+    public void setBasicMovieList(List<Item> basicMovieList) {
+        this.basicMovieList = basicMovieList;
+    }
+
+    public List<Item> getCurrentBookList() {
+        return currentBookList;
+    }
+
+    public void setCurrentBookList(List<Item> currentBookList) {
+        this.currentBookList = currentBookList;
+    }
+
 
 
 }
