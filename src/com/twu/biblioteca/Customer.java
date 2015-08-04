@@ -13,6 +13,7 @@ public class Customer {
     String libraryNum;
 
     List<Item> borrowedItemList= new ArrayList<>();
+    public Customer(){}
 
     public Customer(String name,String emailAddress,int phone,String libraryNum,String passWord)
     {

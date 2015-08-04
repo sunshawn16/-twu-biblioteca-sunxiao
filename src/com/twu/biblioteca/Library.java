@@ -39,6 +39,7 @@ public class Library {
 
         System.out.println("Welcome to Biblioteca!");
         while(true) {
+            Customer customer= new Customer();;
             System.out.println("Please Login ");
             System.out.println("library number:");
             String libraryNum = InputUtil.getInputString();
@@ -52,6 +53,7 @@ public class Library {
                 }
                 if (customerList.get(i).getLibraryNum().equals(libraryNum) || customerList.get(i).getPassWord().equals(psssword)) {
                     System.out.println("Success login!");
+                    customer=customerList.get(i);
                     break;
                 }
             }
@@ -74,38 +76,21 @@ public class Library {
                 {
                     if (cate.equals("BookList")){
                         Item wanttoBorrowBook = selectItem(cate);
-                        checkoutItem(wanttoBorrowBook, customer1);
+                        checkoutItem(wanttoBorrowBook,customer);
                     }
                     if(cate.equals("Movie")){
                         Item wanttoBorrowItem = selectItem(cate);
-                        checkoutItem(wanttoBorrowItem, customer1);
+                        checkoutItem(wanttoBorrowItem,customer);
                     }
                 }
             }else if (selectedNumber == 2) {
-                returnItem(customer1);
-            } else {
+                returnItem(customer);
+            } else if (selectedNumber == 3){
+                showCustomerInfo(customer);
+            }else {
                 System.out.println("The number is wrong, please reenter a number:");
             }
         }
-    }
-
-    private Item selectItem(String cate) {
-        List<Item> targetList=new ArrayList<>();
-
-        if(cate.equals("BookList"))
-        {
-            targetList=getCurrentBookList();
-        }
-        else{
-            targetList=getCurrentMovieList();
-        }
-        System.out.println("choose the one you want:");
-        int itemNum= InputUtil.getInputNum();
-        if(itemNum > targetList.size()){
-            System.out.println("That Number is not available.");
-        }
-        itemNum--;
-        return targetList.get(itemNum);
     }
 
     private String getCategory() {
@@ -154,6 +139,25 @@ public class Library {
         }
     }
 
+    private Item selectItem(String cate) {
+        List<Item> targetList=new ArrayList<>();
+
+        if(cate.equals("BookList"))
+        {
+            targetList=getCurrentBookList();
+        }
+        else{
+            targetList=getCurrentMovieList();
+        }
+        System.out.println("choose the one you want:");
+        int itemNum= InputUtil.getInputNum();
+        if(itemNum > targetList.size()){
+            System.out.println("That Number is not available.");
+        }
+        itemNum--;
+        return targetList.get(itemNum);
+    }
+
     public void checkoutItem(Item item, Customer customer){
         if (item.getCategory().equals("BookList")){
             getCurrentBookList().remove(item);
@@ -170,7 +174,7 @@ public class Library {
     }
 
     public void returnItem(Customer customer){
-        System.out.println("**********"+customer.getName()+"'bookList *************************");
+        System.out.println("**********"+customer.getName()+"'List *************************");
         System.out.println("No       Name       Author    Year");
         int i =1;
         for(Item item1:customer.getBorrowedItemList())
@@ -196,6 +200,11 @@ public class Library {
         {
             System.out.println("That is not a vaild item to return.");
         }
+    }
+
+    public void showCustomerInfo(Customer customer){
+        System.out.println("library number       name      email        phone");
+        System.out.println(customer.getLibraryNum()+"    "+customer.getName()+"  "+customer.getEmailAddress() +"  "+ customer.getPhone());
     }
 
 
