@@ -1,5 +1,6 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.Util.InputUtil;
 import com.twu.biblioteca.bean.Book;
 import com.twu.biblioteca.bean.Item;
 import com.twu.biblioteca.bean.Movie;
@@ -12,11 +13,17 @@ public class Library {
     private List<Item> basicMovieList;
     private List<Item> currentBookList;
     private List<Item> currentMovieList;
+    private List<Customer> customerList;
 
-    public void initial(){
+    public void initial() throws Exception {
         Item book1= new Book("Clean code","BookList","sun",1990);
         Item book2= new Book("winds","BookList","sun",1990);
         Item movie1= new Movie("Yunshuiyao","Movie","sun",1990,1);
+        Customer customer1= new Customer("test1","123@qq.com",12345,"001-0001","1234");
+        Customer customer2= new Customer("test2","123@qq.com",12345,"001-0002","1254");
+        customerList = new ArrayList<>();
+        customerList.add(customer1);
+        customerList.add(customer2);
         basicBookList = new ArrayList<>();
         currentBookList = new ArrayList<>();
         basicMovieList = new ArrayList<>();
@@ -27,53 +34,78 @@ public class Library {
         currentBookList.add(book1);
         currentBookList.add(book2);
         currentMovieList.add(movie1);
-        Customer customer= new Customer();
+
+
 
         System.out.println("Welcome to Biblioteca!");
         while(true) {
+            System.out.println("Please Login ");
+            System.out.println("library number:");
+            String libraryNum = InputUtil.getInputString();
+            System.out.println("Pssword:");
+            String psssword = InputUtil.getInputString();
+            int customerNum = customerList.size();
+            for (int i = 0; i <= customerNum; i++) {
+                if (i == customerNum) {
+                    System.out.println("customer not exist! try again");
+
+                }
+                if (customerList.get(i).getLibraryNum().equals(libraryNum) || customerList.get(i).getPassWord().equals(psssword)) {
+                    System.out.println("Success login!");
+                    break;
+                }
+            }
+
             System.out.println("Select number :");
             System.out.println("1.get itemlist");
-            System.out.println("2.return ");
+            System.out.println("2.return item");
+            System.out.println("3.my profile");
             int selectedNumber = InputUtil.getInputNum();
             if (selectedNumber == 1) {
                 String cate = getCategory();
                 if(cate.equals("Quit")){
                     continue;
                 }
-                searchList(cate);
+                getDetailsList(cate);
                 System.out.println("If you want to quit enter zero,else to continue.");
                 if(InputUtil.getInputNum()==0){
                     continue;
                 }else
                 {
                     if (cate.equals("BookList")){
-                        System.out.println("choose the book you want:");
-                        int itemNum=InputUtil.getInputNum();
-                        if(itemNum>getCurrentBookList().size()){
-                            System.out.println("That Number is not available.");
-                        }
-                        itemNum--;
-                        Item wanttoBorrowItem = getCurrentBookList().get(itemNum);
-                        checkoutItem(wanttoBorrowItem, customer);
+                        Item wanttoBorrowBook = selectItem(cate);
+                        checkoutItem(wanttoBorrowBook, customer1);
                     }
                     if(cate.equals("Movie")){
-                        System.out.println("choose the Movie you want:");
-                        int itemNum=InputUtil.getInputNum();
-                        if(itemNum>getCurrentMovieList().size()){
-                            System.out.println("That Number is not available.");
-                            continue;
-                        }
-                        itemNum--;
-                        Item wanttoBorrowItem = getCurrentMovieList().get(itemNum);
-                        checkoutItem(wanttoBorrowItem, customer);
+                        Item wanttoBorrowItem = selectItem(cate);
+                        checkoutItem(wanttoBorrowItem, customer1);
                     }
                 }
             }else if (selectedNumber == 2) {
-                returnItem(customer);
+                returnItem(customer1);
             } else {
                 System.out.println("The number is wrong, please reenter a number:");
             }
         }
+    }
+
+    private Item selectItem(String cate) {
+        List<Item> targetList=new ArrayList<>();
+
+        if(cate.equals("BookList"))
+        {
+            targetList=getCurrentBookList();
+        }
+        else{
+            targetList=getCurrentMovieList();
+        }
+        System.out.println("choose the one you want:");
+        int itemNum= InputUtil.getInputNum();
+        if(itemNum > targetList.size()){
+            System.out.println("That Number is not available.");
+        }
+        itemNum--;
+        return targetList.get(itemNum);
     }
 
     private String getCategory() {
@@ -98,7 +130,7 @@ public class Library {
         return cate;
     }
 
-    public void searchList(String category){
+    public void getDetailsList(String category){
 
         int i=1;
         if (category.equals("BookList"))
@@ -116,7 +148,7 @@ public class Library {
             System.out.println("No         Name       Author     Year    Rating");
             for(Item movie : currentMovieList)
             {
-                     movie.printInfo(i);
+                    movie.printInfo(i);
                     i++;
             }
         }
@@ -132,7 +164,7 @@ public class Library {
         {
             getCurrentMovieList().remove(item);
             customer.borrowedItemList.add(item);
-            System.out.println("Thank you! Enjoy !");
+            System.out.println("Thank you! Enjoy!");
         }
 
     }

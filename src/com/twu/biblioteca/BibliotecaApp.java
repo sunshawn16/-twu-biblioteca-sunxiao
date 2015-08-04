@@ -2,7 +2,7 @@ package com.twu.biblioteca;
 
 public class BibliotecaApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Library library= new Library();
         library.initial();
 

@@ -24,10 +24,10 @@ public class LibraryTest {
     }
 
     @Test
-    public void shoud_get_welcome_when_get_ready(){
+    public void shoud_get_welcome_when_get_ready() throws Exception {
         bibloteca .initial();
 
-        assertEquals(2,bibloteca.getBasicBookList().size());
+        assertEquals(2, bibloteca.getBasicBookList().size());
     }
     @Test
     public void should_delete_book_when_checkout(){
